@@ -493,45 +493,16 @@ def render(before: tuple, after: tuple):
 
     st.divider()
 
-    # ── 2.3 Traffic Quality: Self-Referrals & Bot Removal ───────────────────
-    st.subheader("2.3 — Traffic Quality: Self-Referrals & Bot Removal")
+    # ── 2.3 Traffic Quality: Bot Removal ─────────────────────────────────────
+    st.subheader("2.3 — Traffic Quality: Bot Removal")
     _FULL_BEFORE = ("2025-11-01", "2026-05-31")
     st.caption("Before period hardcoded Nov 2025 – May 2026 (full window of broken tracking). After = current audit period.")
 
     callout(
-        "Two sources of inflated, misleading traffic were identified and removed: "
-        "tharaa.shop self-referrals (GA4 recounting its own sessions as external referrals) "
-        "and bot/junk sources (Pangle, Tag Assistant, Hotjar, googleapis). "
-        "Both are excluded from the after period.",
+        "Bot/junk sources (Pangle, Tag Assistant, Hotjar, googleapis) were identified as inflated, "
+        "misleading traffic and are excluded from the after period.",
         kind="info",
     )
-
-    # ── Self-Referral ─────────────────────────────────────────────────────
-    st.markdown("**Self-Referrals (tharaa.shop)**")
-    try:
-        df2, _ = run_report(
-            dimensions=("sessionSource",),
-            metrics=("sessions", "transactions", "purchaseRevenue"),
-            before=_FULL_BEFORE, after=after,
-            dim_filter=contains_filter("sessionSource", "tharaa"),
-        )
-        merged2 = merge_periods(df2, ["sessionSource"],
-                                ["sessions", "transactions", "purchaseRevenue"])
-
-        cols = st.columns(2)
-        kpi(cols[0], "Self-Referral Sessions",
-            merged2["sessions_before"].sum(), merged2["sessions_after"].sum(),
-            format_fn=num, good="down",
-            note="Before: 189,920 documented in audit")
-        kpi(cols[1], "Self-Referral Transactions",
-            merged2["transactions_before"].sum(), merged2["transactions_after"].sum(),
-            format_fn=num, good="down",
-            note="Before: 3,424 transactions affected")
-
-    except Exception as e:
-        st.error(f"GA4 query failed: {e}")
-
-    st.markdown("---")
 
     # ── Bot & Junk Sources ────────────────────────────────────────────────
     st.markdown("**Bot & Junk Sources** (Pangle, Tag Assistant, Hotjar, googleapis)")
