@@ -20,12 +20,18 @@ _SCOPES = ["https://www.googleapis.com/auth/analytics.readonly"]
 def get_credentials():
     """Streamlit Cloud secrets (deployed) first, then a local service-account file (dev). None = fall back to ADC."""
     try:
-        if "gcp_service_account" in st.secrets:
-            return service_account.Credentials.from_service_account_info(
-                dict(st.secrets["gcp_service_account"]), scopes=_SCOPES,
-            )
+        has_secret = "gcp_service_account" in st.secrets
     except Exception:
-        pass
+        # No secrets.toml at all (expected for local dev) — not a real error, fall through.
+        has_secret = False
+
+    if has_secret:
+        # A malformed secret here is a real config error — let it raise so it surfaces
+        # as a specific message instead of silently falling back to the ADC metadata probe.
+        return service_account.Credentials.from_service_account_info(
+            dict(st.secrets["gcp_service_account"]), scopes=_SCOPES,
+        )
+
     if SERVICE_ACCOUNT_JSON and os.path.exists(SERVICE_ACCOUNT_JSON):
         return service_account.Credentials.from_service_account_file(
             SERVICE_ACCOUNT_JSON, scopes=_SCOPES,
