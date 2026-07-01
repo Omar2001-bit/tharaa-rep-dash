@@ -1,0 +1,7 @@
+service-account.json
+.env
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
+.claude/
+.impeccable/
