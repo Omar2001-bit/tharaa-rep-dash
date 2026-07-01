@@ -100,11 +100,6 @@ def _render_param_section(number, title, tag, narrative, dim, dim_label, after,
 def render(before: tuple, after: tuple):
     # ── 6.1 Customer Segmentation Dimensions ─────────────────────────────────
     st.subheader("6.1 — Customer Segmentation Dimensions (After Period Only)")
-    callout(
-        "customer_value_tier is not yet registered in GA4 Admin — it will show '(not set)' "
-        "until the agency registers it. All other dims are live.",
-        kind="warning",
-    )
 
     grid = st.columns(2)
     for i, (dim, label) in enumerate(CUSTOMER_DIMS):
