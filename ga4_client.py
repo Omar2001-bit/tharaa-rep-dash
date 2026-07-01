@@ -46,14 +46,35 @@ def run_funnel_report(steps: tuple, period: tuple, is_open: bool = False) -> pd.
     Returns DataFrame: step (e.g. "1. view_item"), activeUsers, completionRate,
     abandonments, abandonmentRate.
     """
+    # Funnel Explorations can't filter on 'pagePath' directly (GA4 rejects it), so a
+    # page_view used as step 1 is constrained via the raw page_location event param instead —
+    # otherwise page_view is too general (matches every page) to anchor a funnel's start.
+    _HOMEPAGE_REGEXP = r"^https://(www\.)?tharaa\.shop/(\?.*)?$"
+
+    def _event_filter(step, is_first_step):
+        if is_first_step and step == "page_view":
+            return data_v1alpha.FunnelEventFilter(
+                event_name=step,
+                funnel_parameter_filter_expression=data_v1alpha.FunnelParameterFilterExpression(
+                    funnel_parameter_filter=data_v1alpha.FunnelParameterFilter(
+                        event_parameter_name="page_location",
+                        string_filter=data_v1alpha.StringFilter(
+                            match_type=data_v1alpha.StringFilter.MatchType.FULL_REGEXP,
+                            value=_HOMEPAGE_REGEXP,
+                        ),
+                    )
+                ),
+            )
+        return data_v1alpha.FunnelEventFilter(event_name=step)
+
     funnel_steps = [
         data_v1alpha.FunnelStep(
             name=step,
             filter_expression=data_v1alpha.FunnelFilterExpression(
-                funnel_event_filter=data_v1alpha.FunnelEventFilter(event_name=step)
+                funnel_event_filter=_event_filter(step, i == 0)
             ),
         )
-        for step in steps
+        for i, step in enumerate(steps)
     ]
     request = data_v1alpha.RunFunnelReportRequest(
         property=config.PROPERTY_ID,
