@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 import streamlit as st
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
@@ -7,17 +6,12 @@ from google.analytics.data_v1beta.types import (
     FilterExpression, Filter, FilterExpressionList, OrderBy,
 )
 import google.analytics.data_v1alpha as data_v1alpha
-from google.oauth2 import service_account
 import config
 
 
 def _build_client() -> BetaAnalyticsDataClient:
-    sa_path = config.SERVICE_ACCOUNT_JSON
-    if sa_path and os.path.exists(sa_path):
-        creds = service_account.Credentials.from_service_account_file(
-            sa_path,
-            scopes=["https://www.googleapis.com/auth/analytics.readonly"],
-        )
+    creds = config.get_credentials()
+    if creds:
         return BetaAnalyticsDataClient(credentials=creds)
     return BetaAnalyticsDataClient()  # falls back to ADC
 
@@ -28,12 +22,8 @@ def get_client() -> BetaAnalyticsDataClient:
 
 
 def _build_alpha_client() -> data_v1alpha.AlphaAnalyticsDataClient:
-    sa_path = config.SERVICE_ACCOUNT_JSON
-    if sa_path and os.path.exists(sa_path):
-        creds = service_account.Credentials.from_service_account_file(
-            sa_path,
-            scopes=["https://www.googleapis.com/auth/analytics.readonly"],
-        )
+    creds = config.get_credentials()
+    if creds:
         return data_v1alpha.AlphaAnalyticsDataClient(credentials=creds)
     return data_v1alpha.AlphaAnalyticsDataClient()
 

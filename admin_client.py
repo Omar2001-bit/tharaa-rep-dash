@@ -1,18 +1,12 @@
-import os
 import streamlit as st
 from google.analytics.admin import AnalyticsAdminServiceClient
-from google.oauth2 import service_account
 import config
 
 
 @st.cache_resource
 def get_admin_client() -> AnalyticsAdminServiceClient:
-    sa_path = config.SERVICE_ACCOUNT_JSON
-    if sa_path and os.path.exists(sa_path):
-        creds = service_account.Credentials.from_service_account_file(
-            sa_path,
-            scopes=["https://www.googleapis.com/auth/analytics.readonly"],
-        )
+    creds = config.get_credentials()
+    if creds:
         return AnalyticsAdminServiceClient(credentials=creds)
     return AnalyticsAdminServiceClient()
 
