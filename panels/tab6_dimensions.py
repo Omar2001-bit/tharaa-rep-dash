@@ -169,23 +169,9 @@ def render(before: tuple, after: tuple):
         metrics=("eventCount",), primary_col="eventCount",
     )
 
-    # ── 6.4 Variant Demand via Swatch Selection ──────────────────────────────
+    # ── 6.4 Manual Sort Override Rate ─────────────────────────────────────────
     _render_param_section(
-        number="6.4", title="Variant Demand via Swatch Selection", tag="revenue",
-        narrative=(
-            "Every swatch value logged is the exact color or material a shopper actively "
-            "selected, not just viewed — a sharper restock and merchandising-priority signal "
-            "than raw product views. Colors and materials dominating this list deserve "
-            "inventory priority and homepage/ad placement; ones barely appearing are candidates "
-            "to phase out or bundle-discount before they tie up cash in slow-moving stock."
-        ),
-        dim="customEvent:swatch_value", dim_label="Swatch Value", after=after,
-        metrics=("eventCount",), primary_col="eventCount",
-    )
-
-    # ── 6.5 Manual Sort Override Rate ─────────────────────────────────────────
-    _render_param_section(
-        number="6.5", title="Manual Sort Override Rate", tag="revenue",
+        number="6.4", title="Manual Sort Override Rate", tag="revenue",
         narrative=(
             "Every time a shopper overrides the default sort order, they're telling you the "
             "default isn't surfacing what they want. Price-ascending consistently outranking "
@@ -237,9 +223,9 @@ def render(before: tuple, after: tuple):
 
     st.divider()
 
-    # ── 6.6 Category Link Click Demand ────────────────────────────────────────
+    # ── 6.5 Category Link Click Demand ────────────────────────────────────────
     _render_param_section(
-        number="6.6", title="Category Link Click Demand", tag="revenue",
+        number="6.5", title="Category Link Click Demand", tag="revenue",
         narrative=(
             "link_text captures the exact category or collection label a shopper clicked — a "
             "direct read on which product categories pull the most interest before they even "
@@ -251,8 +237,8 @@ def render(before: tuple, after: tuple):
         metrics=("eventCount",), primary_col="eventCount",
     )
 
-    # ── 6.7 Ecommerce Item Field Population ───────────────────────────────────
-    st.subheader("6.7 — Ecommerce Item Field Population")
+    # ── 6.6 Ecommerce Item Field Population ───────────────────────────────────
+    st.subheader("6.6 — Ecommerce Item Field Population")
     callout(
         "Before: item_list_name was 100% blank due to wrong field names in Shopify's "
         "native pixel. After: custom pixel maps the field correctly.",
@@ -297,8 +283,8 @@ def render(before: tuple, after: tuple):
 
     st.divider()
 
-    # ── 6.8 Product Enrichment Fields ─────────────────────────────────────────
-    st.subheader("6.8 — New Product Enrichment Fields (After Period Only)")
+    # ── 6.7 Product Enrichment Fields ─────────────────────────────────────────
+    st.subheader("6.7 — New Product Enrichment Fields (After Period Only)")
     st.caption("Fields that had no equivalent in any previous tracking implementation.")
 
     col_a, col_b = st.columns(2)
@@ -365,8 +351,8 @@ def render(before: tuple, after: tuple):
 
     st.divider()
 
-    # ── 6.9 Item Variant & Quantity Coverage ──────────────────────────────────
-    st.subheader("6.9 — Item Variant & Quantity Coverage")
+    # ── 6.8 Item Variant & Quantity Coverage ──────────────────────────────────
+    st.subheader("6.8 — Item Variant & Quantity Coverage")
     callout(
         "Before: item_variant always blank — no color/size tracking. "
         "After: variant title sent as item_variant. "
